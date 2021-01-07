@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.student.mapper.ClassMapper">
+
+    <resultMap id="classResult" type="com.manage.student.dao.TClass">
+        <id column="class_id" property="classId" jdbcType="VARCHAR" />
+        <result column="class_name" property="className" jdbcType="VARCHAR" />
+        <result column="update_at" property="updateAt" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!-- 添加班级信息 -->
+    <insert id="insertClass" parameterType="com.manage.student.dao.TClass">
+        insert into t_class
+        (`class_id`, `class_name`, `update_at`)
+        values
+        (#{classId,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR}, #{updateAt,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 根据classId删除班级信息 -->
+    <delete id="delClassById" parameterType="java.lang.String">
+        delete from t_class where class_id = #{classId,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据classId更新班级信息 -->
+    <update id="updateClassById" parameterType="com.manage.student.dao.TClass">
+        update t_class
+        <trim prefix="set" suffixOverrides=",">
+            <if test="className != null" >
+                class_name = #{className,jdbcType=VARCHAR},
+            </if>
+            <if test="updateAt != null" >
+                update_at = #{updateAt,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        where class_id = #{classId,jdbcType=VARCHAR}
+    </update>
+
+    <sql id="classColumn">
+        class_id, class_name, update_at
+    </sql>
+
+    <!-- 分页查询班级信息 -->
+    <select id="selectList" resultMap="classResult" parameterType="com.manage.student.param.ClassParam">
+        select
+        <include refid="classColumn"></include>
+        from t_class
+        where 1=1
+        <if test="className != null and className != ''">
+            and class_name like concat('%',#{className,jdbcType=VARCHAR},'%')
+        </if>
+        order by update_at desc
+        <if test="form != null and pageSize != null">
+            limit #{form,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <!-- 查询班级数量 -->
+    <select id="selectCount" resultType="java.lang.Integer" parameterType="com.manage.student.param.ClassParam">
+        select count(*) from t_class
+        where 1=1
+        <if test="className != null and className != ''">
+            and class_name like concat('%',#{className,jdbcType=VARCHAR},'%')
+        </if>
+    </select>
+
+    <!-- 查询所有班级 -->
+    <select id="selectAll" resultMap="classResult">
+        select
+        class_id, class_name
+        from t_class
+    </select>
+
+    <!-- 根据班级名称查询班级集合 -->
+    <select id="valNameCount" resultMap="classResult" parameterType="java.lang.String">
+        select
+        <include refid="classColumn"></include>
+        from t_class
+        where
+        class_name = #{className,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据classId 查询班级 -->
+    <select id="countClassById" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(*)
+        from t_class
+        where class_id = #{classId,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

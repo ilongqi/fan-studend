@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/student?characterEncoding=UTF8&serverTimezone=UTC&useSSL=false
+    username: root
+    password: root
+
+
+mybatis:
+  type-aliases-package: com.manage.student
+  mapper-locations: classpath:mapper/*Mapper.xml

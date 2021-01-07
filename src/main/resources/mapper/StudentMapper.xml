@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.student.mapper.StudentMapper">
+
+    <resultMap id="studentResult" type="com.manage.student.dao.TStudent">
+        <id column="student_id" property="studentId" jdbcType="VARCHAR" />
+        <result column="student_name" property="studentName" jdbcType="VARCHAR" />
+        <result column="update_at" property="updateAt" jdbcType="VARCHAR" />
+
+        <result column="class_id" property="classId" jdbcType="VARCHAR"/>
+        <result column="class_name" property="className" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 添加学生信息 -->
+    <insert id="insertStudent" parameterType="com.manage.student.dao.TStudent">
+        insert into t_student
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="studentId != null" >
+                student_id,
+            </if>
+            <if test="studentName != null" >
+                student_name,
+            </if>
+            <if test="updateAt != null" >
+                update_at,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="studentId != null" >
+                #{studentId,jdbcType=VARCHAR},
+            </if>
+            <if test="studentName != null" >
+                #{studentName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateAt != null" >
+                #{updateAt,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 根据studentId删除学生信息 -->
+    <delete id="delStudentById" parameterType="java.lang.String">
+        delete from t_student where student_id = #{studentId,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据studentId修改学生信息 -->
+    <update id="updateStudentById" parameterType="com.manage.student.dao.TStudent">
+        update t_student
+        <trim prefix="set" suffixOverrides=",">
+            <if test="studentName != null" >
+                student_name = #{studentName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateAt != null" >
+                update_at = #{updateAt,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        where student_id = #{studentId,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 根据参数，分页查询学生信息 -->
+    <select id="selectList" resultMap="studentResult" parameterType="com.manage.student.param.StudentParam">
+        select
+        t1.student_id, t1.student_name, t1.update_at, t3.class_id, t3.class_name
+        from t_student t1
+        left join t_student_class t2 on t1.student_id = t2.student_id
+        left join t_class t3 on t2.class_id = t3.class_id
+        where 1=1
+        <if test="studentName != null">
+            and t1.student_name like concat('%',#{studentName,jdbcType=VARCHAR},'%')
+        </if>
+        order by t1.update_at desc
+        <if test="form != null and pageSize != null">
+            limit #{form,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <!-- 根据参数，查询学生数量 -->
+    <select id="selectCount" resultType="java.lang.Integer" parameterType="com.manage.student.param.StudentParam">
+        select count(*) from t_student
+        where 1=1
+        <if test="studentName != null">
+            and student_name like concat('%',#{studentName,jdbcType=VARCHAR},'%')
+        </if>
+    </select>
+
+    <!-- 查询班级内学生信息 -->
+    <select id="selectListByClassId" resultMap="studentResult" parameterType="java.lang.String">
+        select
+        t1.student_id, t1.student_name, t1.update_at
+        from t_student t1
+        left join t_student_class t2 on t1.student_id = t2.student_id
+        left join t_class t3 on t2.class_id = t3.class_id
+        where t3.class_id = #{classId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据studentId 查询学生 -->
+    <select id="countStudentById" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(*) from t_student where student_id = #{studentId,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

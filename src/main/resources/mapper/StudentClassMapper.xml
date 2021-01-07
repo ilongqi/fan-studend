@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.student.mapper.StudentClassMapper">
+
+    <!-- 添加学生班级信息 -->
+    <insert id="insertStudentClass" parameterType="com.manage.student.dao.TStudentClass">
+        insert into t_student_class
+        (`id`, `student_id`, `class_id`, `update_at`)
+        values
+        (#{id,jdbcType=VARCHAR}, #{studentId,jdbcType=VARCHAR},
+        #{classId,jdbcType=VARCHAR}, #{updateAt,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 根据studentId删除学生班级信息 -->
+    <delete id="deleteByStudentId" parameterType="java.lang.String">
+        delete from t_student_class where student_id = #{studentId,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据classId删除学生班级信息 -->
+    <delete id="deleteByClassId" parameterType="java.lang.String">
+        delete from t_student_class where class_id = #{classId,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据studentId查询 学生班级记录 -->
+    <select id="countByStudentId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from t_student_class where student_id = #{studentId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据classId查询 学生班级记录 -->
+    <select id="countByClassId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from t_student_class where class_id = #{classId,jdbcType=VARCHAR}
+    </select>
+</mapper>
